@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>胆固醇监测</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <link rel="stylesheet" href="../css/sm.min.css">
+    <link rel="stylesheet" href="../css/my.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <style type="text/css">
+        [v-cloak]{ display: none; }
+
+        input{font-size: 12px; !important;}
+    </style>
+
+</head>
+<body>
+
+<div class="page-group">
+    <!-- 你的html代码 -->
+     <div class="page">
+
+
+        <div class="content" id="bodyinfo">
+            <!-- 这里是页面内容区 -->
+            <div class="row blood">
+                <div class="blood-info" v-cloak>
+                   <div class="xx"><span>{{ItemVal}}</span></div>
+                     <div class="unit">{{ItemUnit}}</div>
+                    <div class="xxtime">{{ItemTime}}</div>
+                </div>
+                <div class="date">
+                    <i class="fa fa-caret-left"></i>
+                    <input type="text" id="month" value="" />
+                    <i class="fa fa-calendar"></i>
+                    <i class="fa fa-caret-right max"></i>
+                </div>
+            </div>
+            <div class="row blood-chart">
+                <div class="col-100">
+                    <div class="title">&nbsp;&nbsp;胆固醇监测</div>
+                    <!-- 为ECharts准备一个具备大小（宽高）的容器 -->
+                    <div id="main" style="width: 100%;height:14rem;"></div>
+                    <i class="fa fa-caret-left" @click="GoLeft()"></i>
+                    <i class="fa fa-caret-right" @click="GoRight()"></i>
+                    <input type="text" id="year" />
+                </div>
+            </div>
+            <!-- 内容区结束 -->
+        </div>
+    </div>
+</div>
+<script src="../js/base.js" type="text/javascript"></script>
+<script src="../js/public.js" type="text/javascript"></script>
+<script src="../js/lib/vue20.min.js"></script>
+<script type='text/javascript' src='../js/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../js/sm.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../js/echarts.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='../js/rili.js' charset='utf-8'></script>
+
+
+<script>
+
+var domainUrl = GetMvcApiDomain();
+
+
+function plusReady() { 
+var _self = plus.webview.currentWebview();
+var username=_self.UserName;
+if(username==null || username=='' || username==undefined){
+	var objuser=JSON.parse(plus.storage.getItem('user'));
+    username = objuser.UserName;
+}
+
+
+
+HeadShow();
+vum.putArrarData();
+back();
+}
+
+if(window.plus){  
+plusReady();  
+}else{  
+document.addEventListener("plusready",plusReady,false);  
+} 
+
+$.init();
+
+
+
+$(function() {
+        //加载时赋值年份
+        var now = new Date();
+        var year = now.getFullYear()
+        $("#year").val(year);
+
+        //切换年份
+        $("#year").picker({
+            toolbarTemplate: '<header class="bar bar-nav" style="background: #fff">\
+  <button class="button button-link pull-right close-picker" id="btnYear">确定</button>\
+  <h1 class="title">请选择年份</h1>\
+  </header>',
+            cols: [
+                {
+                    textAlign: 'center',
+                    values: ['2014', '2015', '2016', '2017', '2018', '2019']
+                    //如果你希望显示文案和实际值不同，可以在这里加一个displayValues: [.....]
+                }
+            ]
+        });
+        
+        
+        
+        var Nowtime=new Date();
+        var currYear=add0(Nowtime.getFullYear());//今年
+        var currMonth=add0(Nowtime.getMonth()+1);//当前月份
+
+               //初始化当前年月
+        $("#month").monthPicker({
+            value: [currYear, currMonth]
+        });
+//        $("#month").picker("setValue", [currYear, currMonth]);
+
+        //初始化年月选项
+        var yearArr = [];
+        var monthArr = [];
+        for(var i=0;i<=79;i++){
+            yearArr.push(i+1970);
+            if(currYear==i+1970){
+                break;//最大年份为今年
+            }
+        }
+        var monthdata="01";
+        for(var i=0;i<12;i++){
+        	if(i==0){
+        	monthdata="01";	
+        	}
+        	if(i==1){
+        	monthdata="02";	
+        	}
+        	if(i==2){
+        	monthdata="03";	
+        	}
+        	if(i==3){
+        	monthdata="04";	
+        	}
+        	if(i==4){
+        	monthdata="05";	
+        	}
+        	if(i==5){
+        	monthdata="06";	
+        	}
+        	if(i==6){
+        	monthdata="07";	
+        	}
+        	if(i==7){
+        	monthdata="08";	
+        	}
+        	if(i==8){
+        	monthdata="09";	
+        	}
+        	if(i==9){
+        	monthdata="10";	
+        	}
+        	if(i==10){
+        	monthdata="11";	
+        	}
+        	if(i==11){
+        	monthdata="12";	
+        	}
+            //monthArr.push(i+1);
+            monthArr.push(monthdata);
+        }
+        yearArr.reverse();
+        monthArr.reverse();
+        $("#month").picker({
+            toolbarTemplate: '<header class="bar bar-nav">\
+  <button class="button button-link pull-right close-picker" id="btnMonth">确定</button>\
+  <h1 class="title">年月切换</h1>\
+  </header>',
+            formatValue: function (picker, values, displayValues) {
+                return displayValues[0] + '-' + values[1];
+            },
+            cols: [
+                {
+                    textAlign: 'center',
+                    values: yearArr
+                },
+                {
+                    textAlign: 'center',
+                    values: monthArr
+                }
+            ]
+        });
+        //切换到上个月（左箭头）
+        $('.date i[class*="fa-caret-left"]').click(function(){
+            var ym = $(this).nextAll('input').val();
+            var y = parseInt(ym.substr(0,4));
+            var m = parseInt(ym.substr(5,2))-1;
+            y = add0(new Date(y,m,0).getFullYear());
+            m = add0(new Date(y,m,0).getMonth()+1);
+            if(y<=currYear && m<=currMonth){
+                $(this).nextAll('i[class*="right"]').removeClass('max');
+            }
+            $(this).nextAll('input').datePicker({
+                value: [y, m]
+            });
+            ym=y+"-"+m;
+            vum.putArrarDataByMonth(ym);
+        });
+
+        //切换到下个月（右箭头）
+        $('.date i[class*="fa-caret-right"]').click(function(){
+            var ym = $(this).prevAll('input').val();
+            var y = parseInt(ym.substr(0,4));
+            var m = parseInt(ym.substr(5,2))+1;
+            y = add0(new Date(y,m,0).getFullYear());
+            m = add0(new Date(y,m,0).getMonth()+1);
+            if((y==currYear||y>currYear) && m>currMonth){
+                $(this).addClass('max');
+                $.toast('没有下个月的数据');
+            }else{
+                $(this).prevAll('input').datePicker({
+                    value: [y, m]
+                });
+                var monthtxt=document.getElementById("month").value;
+                ym=y+"-"+m;
+                vum.putArrarDataByMonth(monthtxt);
+            }
+        });
+        
+        
+        
+
+        
+ });
+
+
+
+ var vum = new Vue({
+    el: '#bodyinfo',
+    data: function(){
+        return {
+                UserName: '',
+			    // 初始化空对象  
+                myChart: null,  
+                // 初始化图表配置  
+            option: {
+            tooltip : {
+                trigger: 'axis',
+                formatter:'{a0}:{c0}<br>{a1}:{c1}'
+            },
+            legend: {
+                top:'91%',
+                left: '4%',
+               data:[{name: '胆固醇',icon :'circle',textStyle: {color: '#79c34b'}}]
+            },
+            dataZoom:{
+                type:'inside',
+            },
+            grid: {
+                show:true,
+                top:'8%',
+                left: '2%',
+                right: '5%',
+                bottom: '12%',
+                containLabel: true,
+                backgroundColor:'rgba(255, 255, 255, 0.3)',
+                borderColor:'#efefef'
+            },
+            xAxis : [
+                {
+                    type : 'category',
+                    data : [0],//初始收下标，由后台提供
+                    axisLine: {
+                        lineStyle: {
+                            color:'#888',
+                            opacity:0.5
+                        }
+                    },
+                    axisTick: {
+                        inside: true,
+                        alignWithLabel: true
+                    },
+                    axisLabel:{
+                        textStyle:{
+                            fontSize:12
+                        }
+                    }
+                }
+            ],
+            yAxis : [
+                {
+                    type : 'value',
+                    min:0,
+                    max:10,
+                    interval:1,
+                    axisLine: {
+                        lineStyle: {
+                            color:'#888',
+                            opacity:0
+                        }
+                    },
+                    axisTick : {show: false},
+                    axisLabel:{
+                        margin:14,
+                        textStyle:{
+                            fontSize:10
+                        }
+                    }
+                }
+            ],
+            series: [{
+                name:'胆固醇',
+                type: 'line',
+                lineStyle:{
+                    normal:{
+                        color:'#79c34b'
+                    }
+                },
+                itemStyle:{
+                    normal:{
+                        color:'#79c34b'
+                    }
+                },
+                data: [0]//初始收缩压数据，由后台提供
+            },{
+                name:'时间',
+                type: 'line',
+                lineStyle:{
+                    normal:{
+                        color:'#FF00FF'
+                    }
+                },
+                itemStyle:{
+                    normal:{
+                        color:'#FF00FF'
+                    }
+                },
+                data: [0]
+            }]
+        },
+                ItemVal:"无",  
+                ItemUnit:"mmol/L",
+                ItemTime:"00:00",
+                itype:"CHOL",
+                arrX:[],
+				arrY1:[],
+				arrY2:[]
+        }
+    },
+
+
+    
+    mounted: function () {
+
+        this.$nextTick(function () {
+          
+        
+         this.drawGraph('main');
+//       var self=this;
+//       setTimeout(function(){
+//       self.putArrarData();
+//       }, 150);
+            
+    })
+
+    },
+
+    watch: {
+
+    },
+
+    methods: {
+
+ // 绘图  
+            drawGraph: function (id) {  
+                // 绘图方法  
+                this.myChart = echarts.init(document.getElementById(id))  
+                    // 皮肤添加同一般使用方式  
+                //this.myChart.showLoading();  
+                    // 返回到data中  
+                
+                    // ajax 请求数据  
+                
+                this.myChart.setOption(this.option);
+                
+                
+              },
+
+			
+			
+			putArrarData: function () {
+			  objuser=JSON.parse(plus.storage.getItem('user'));
+              username = objuser.UserName;
+			  var that = this  
+	          $.ajax({
+             	url: domainUrl + "api/HItemRecord/getInsRecordListByType",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,iType:that.itype},
+                success: function (data) {
+                if (data.code == "200") {
+               	if (data.lists1.length == 0) {
+                          that.ItemVal="无"; 
+                          that.ItemTime="00:00";
+                }else{
+                	
+                	for (var i = 0; i < data.lists1.length; i++) {
+                		that.arrX.push(i+1);
+                		that.arrY1.push(data.lists1[i].value1);
+                		that.arrY2.push(data.lists1[i].createTime);
+                		if (i == 0) {
+                          that.ItemVal=data.lists1[i].value1; 
+                          that.ItemTime=data.lists1[i].createTime;     
+                       }
+                		
+                		
+                	}
+                	
+               
+                    
+                 if(that.arrX.length<=8){
+                	that.option.xAxis[0].data=that.arrX;
+                	
+                	that.arrY1=that.arrY1.reverse();
+                	that.arrY2=that.arrY2.reverse();
+                	
+                    that.option.series[0].data=that.arrY1;
+                    that.option.series[1].data=that.arrY2;
+	                that.myChart.setOption(that.option, true);
+                 }else {   
+                 var str = that.arrX[1];//当前起始字符
+                 var dataArr = that.getData(str,8,'l');
+                 that.refreshData(dataArr);//更新数据
+                }
+                    
+                    
+                	
+
+                }   
+               }
+               else{
+               	$.toast("数据接口错误，请稍后再试");
+               }
+               
+               },
+               error: function () { 
+               $.toast("网络错误，请稍后再试");
+              }
+            })
+
+         },
+         
+         
+         putArrarDataByYear:function(year) {
+         	
+        	  this.arrX = [];//x轴下标
+              this.arrY1 = [];//
+              this.arrY2 = [];//日期
+        	
+	          
+	          var that=this;
+	          $.ajax({
+             	url: domainUrl + "api/HItemRecord/getInsRecordListByTypeYear",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,iType:that.itype,year:year},
+                success: function (data) {
+               if (data.code == "200") {
+               	if (data.lists1.length == 0) {
+                      that.ItemVal="无"; 
+                      that.ItemTime="00:00";
+                      that.option.xAxis[0].data=[0];
+                      that.option.series[0].data=[0];
+                      that.option.series[1].data=[0];
+                      that.myChart.setOption(that.option, true);
+                      $.toast("您查询年度没有数据");
+                 }else{
+                	
+                	for (var i = 0; i < data.lists1.length; i++) {
+                		that.arrX.push(i+1);
+                		that.arrY1.push(data.lists1[i].value1);
+                		that.arrY2.push(data.lists1[i].createTime);
+
+                		
+                		if (i == 0) {
+                		  that.ItemVal=data.lists1[i].value1; 
+                          that.ItemTime=data.lists1[i].createTime; 
+                       }
+
+                	}
+
+                }
+                
+
+                if(that.arrX.length<=8){
+                	that.option.xAxis[0].data=that.arrX;
+                	
+                	that.arrY1=that.arrY1.reverse();
+                	that.arrY2=that.arrY2.reverse();
+                	
+                    that.option.series[0].data=that.arrY1;
+                    that.option.series[1].data=that.arrY2;
+	                that.myChart.setOption(that.option, true);
+                 }else {   
+                 var str = that.arrX[1];//当前起始字符
+                 var dataArr = that.getData(str,8,'l');
+                 that.refreshData(dataArr);//更新数据
+                }
+               }
+               else{
+
+               	$.toast("数据接口错误，请稍后再试");
+               }
+               
+               },
+                error: function () {
+                $.toast("网络错误，请稍后再试");
+                 }
+            })
+
+        },
+        
+        putArrarDataByMonth:function(Monthtxt) {
+        	
+        	  this.arrX = [];//x轴下标
+              this.arrY1 = [];//
+              this.arrY2 = [];//日期
+              
+	          
+	          var that=this;
+	          $.ajax({
+             	url: domainUrl + "api/HItemRecord/getInsRecordListByTypeMonth",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,iType:that.itype,monthtxt:Monthtxt},
+                success: function (data) {
+               if (data.code == "200") {
+               	if (data.lists1.length == 0) {
+                      that.ItemVal="无"; 
+                      that.ItemTime="00:00";
+                      that.option.xAxis[0].data=[0];
+                      that.option.series[0].data=[0];
+                      that.option.series[1].data=[0];
+                      that.myChart.setOption(that.option, true);
+                      $.toast("您查询的时间没有数据");
+                }else{
+                	
+                	for (var i = 0; i < data.lists1.length; i++) {
+                		that.arrX.push(i+1);
+                		that.arrY1.push(data.lists1[i].value1);
+                		that.arrY2.push(data.lists1[i].createTime);
+                		
+                		if (i == 0) {
+                          that.ItemVal=data.lists1[i].value1; 
+                          that.ItemTime=data.lists1[i].createTime; 
+
+                       }
+
+                		
+                	}
+                	
+                }
+                
+
+                 if(that.arrX.length<=8){
+                    that.option.xAxis[0].data=that.arrX;
+                    
+                    that.arrY1=that.arrY1.reverse();
+                	that.arrY2=that.arrY2.reverse();
+                    
+                    that.option.series[0].data=that.arrY1;
+                    that.option.series[1].data=that.arrY2;
+	                that.myChart.setOption(that.option, true);
+                 }else {
+                    var str = that.arrX[1];//当前起始字符
+                    var dataArr = that.getData(str,8,'l');
+                    that.refreshData(dataArr);//更新数据
+                 }
+                 
+                
+               }
+               else{
+               	$.toast("数据接口错误，请稍后再试");
+               }
+               
+               },
+                error: function () {
+                $.toast("网络错误，请稍后再试");
+               }
+            })
+
+        },
+         
+         
+         //获取下标
+        indexof: function(arr ,value){
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] == value)
+                    return i;
+            }
+        },
+        
+        //循环获取从指定下标开始向后的数据:str=>下标，len=>长度，lr=>向左向右
+        getData:function(str , lenx , lr){
+        	var len=lenx;
+        	if(this.arrX.length<lenx){
+        		len=this.arrX.length;
+        	}
+            var data = new Array();
+            data[0] = new Array();//存放x轴标
+            data[1] = new Array();//
+            data[2] = new Array();//存放时间
+           
+            var index = this.indexof(this.arrX ,str);//获取匹配到的字符下标
+            var max = this.arrX.length-len;//最大起始下标
+            var star = 0;//初始化起始下标
+            if(lr=='l'){
+                if(index-1<0)$.toast('没有数据了');
+                star = index-1<=0?0:index-1;
+            }else{
+                if(index+1>max)$.toast('没有数据了');
+                star = index+1>=max?max:index+1;
+            }
+            var end  = star+len;
+//            console.info('star:'+star+'end:'+end);
+            //通过循环存入从指定范围的值
+            for(var i = star; i < end; i++){
+                data[0].push(this.arrX[i]);
+                data[1].push(this.arrY1[i]);
+                data[2].push(this.arrY2[i]);
+            }
+            data[1].reverse();
+            data[2].reverse();
+            return data;
+        },
+        
+        //更新数据
+        refreshData:function(dataArr){
+
+                	this.option.xAxis[0].data=dataArr[0];
+                    this.option.series[0].data=dataArr[1];
+                    this.option.series[1].data=dataArr[2];
+	                this.myChart.setOption(this.option, true);
+        },
+        
+        //数据左移
+        GoLeft: function(){
+        	var str = this.option.xAxis[0].data[0];
+            var dataArr = this.getData(str,8,'r');
+            this.refreshData(dataArr);//更新数据
+        },
+        
+        //数据右移
+        GoRight: function(){
+        	var str = this.option.xAxis[0].data[0];
+            var dataArr = this.getData(str,8,'l');
+            this.refreshData(dataArr);//更新数据
+        }
+			
+			
+			
+
+
+    }
+
+
+
+});
+
+ $(document).on("click", "#btnYear", function() {
+var yeartxt=document.getElementById("year").value;
+vum.putArrarDataByYear(yeartxt);
+});
+
+ $(document).on("click", "#btnMonth", function() {
+var monthtxt=document.getElementById("month").value;
+vum.putArrarDataByMonth(monthtxt);
+});
+
+
+
+</script>
+</body>
+</html>

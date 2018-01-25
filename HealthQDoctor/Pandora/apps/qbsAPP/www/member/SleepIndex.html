@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="white" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+<link type="text/css" href="../css/sleep.css" rel="stylesheet" >
+
+<title>手环</title>
+</head>
+<body>
+<div class="web_header">
+	<div class="web_head">
+		<a class="web_h_n1" href=""></a>
+		<a class="web_h_n2" href=""></a>
+		<span class="web_h_n3" href=""></span>
+		<h3>睡眠</h3>
+	</div>
+	<div class="web_head_t">
+		<div class="head_today">今天</div>
+		<div class="head_today_zhuangtai">
+			<span class="zt01"><i></i>深睡</span>
+			<span class="zt02"><i></i>浅睡</span>
+			<span class="zt03"><i></i>清醒</span>
+		</div>
+		<div class="head_chart">
+			<div class="chart">
+				<div class="chart_b"></div>
+				<span class="chartsp chart_zt01" style="width:10%;"><i></i></span>
+				<span class="chartsp chart_zt02" style="width:5%;"><i></i></span>
+				<span class="chartsp chart_zt03" style="width:10%;"><i></i></span>
+				<span class="chartsp chart_zt01" style="width:10%;"><i></i></span>
+				<span class="chartsp chart_zt02" style="width:5%;"><i></i></span>
+				<span class="chartsp chart_zt01" style="width:30%;"><i></i></span>
+				<span class="chartsp chart_zt02" style="width:7%;"><i></i></span>
+				<span class="chartsp chart_zt01" style="width:6%;"><i></i></span>
+				<span class="chartsp chart_zt02" style="width:7%;"><i></i></span>
+				<span class="chartsp chart_zt03" style="width:10%;"><i></i></span>
+			</div>
+			<div class="chart_date clearfix"><span class="f_left">11:00</span><span class="f_right">07:15</span></div>
+		</div>
+	</div>
+</div>
+<div class="web_container">
+	<div class="web_con_box01">
+		<span class="con_box01_t">睡眠时间</span>
+		<div class="con_box01_list">
+			<span>8</span>小时<span>15</span>分钟
+		</div>
+	</div>
+	<div class="web_con_box01">
+		<span class="con_box01_t1">睡眠质量</span>
+		<div class="con_box01_list01">
+			<ul>
+				<li><span>深睡</span><div class="box02_li">7小时5分钟</div>
+					<div class="box02_line" style="width:70%;"></div>
+				</li>
+				<li><span>浅睡</span><div class="box02_li">1小时0分钟</div>
+					<div class="box02_line" style="width:20%;"></div>
+				</li>
+				<li><span>清醒</span><div class="box02_li">10分钟</div>
+					<div class="box02_line" style="width:5%;"></div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="web_con_box02">
+		<div class="con_box02">
+			<span>今天</span><div class="con_box02_list">6小时55分钟</div>
+		</div>
+	</div>
+</div>
+</body>
+
+<script src="../js/lib/jquery-2.1.3.min.js" type="text/javascript"></script>
+<script src="../js/base.js" type="text/javascript"></script>
+<script src="../js/public.js" type="text/javascript"></script>
+<script>
+
+
+			
+var domainUrl = GetMvcApiDomain();
+ 
+var username=null;  
+function plusReady() { 
+	
+var objuser=JSON.parse(plus.storage.getItem('user'));
+username = objuser.UserName;
+
+
+back();
+}
+
+if(window.plus){  
+plusReady();  
+}else{  
+document.addEventListener("plusready",plusReady,false);  
+} 
+
+</script>
+
+
+</html>

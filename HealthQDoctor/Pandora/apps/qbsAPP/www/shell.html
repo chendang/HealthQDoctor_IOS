@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+<title></title>
+<link rel="stylesheet" type="text/css" href="css/lib/CSSRESET.css">
+<link rel="stylesheet" type="text/css" href="css/common.css">
+
+<script src="js/lib/mui.min.js"></script>
+
+</head>
+<body>
+		<footer class="footer" id="tabBab">
+			<ul class="ul_menu">
+				<li class="active" id="Home"><a><i></i>首页</a></li>
+				<li id="Message"><a><i></i>消息</a></li>
+				<!--<li id="Shop"><a><i></i>健康商城</a></li>-->
+                <li id="Favorite"><a><i></i>发现</a></li>
+                <li id="Person"><a><i></i>我</a></li>
+			</ul>
+		</footer>
+		
+<script type="text/javascript" src="js/lib/h.min.js"></script>
+<script type="text/javascript">
+mui.init({
+    subpages : [
+        {
+            url : 'Index.html',
+            id  : 'Index.html',
+            styles : {
+                top    : '0px',
+                bottom : '48px',
+                width  : "100%"
+            }
+        },
+        {
+            url : 'member/Message.html',
+            id  : 'Message.html',
+            styles : {
+                left   : '100%',
+                top    : '0',
+                bottom : '48px',
+                width  : "100%"
+            }
+        },
+//      {
+//          url : 'member/Shop.html',
+//          id  : 'Shop.html',
+//          styles : {
+//              left   : '200%',
+//              top    : '0px',
+//              bottom : '48px',
+//              width  : "100%"
+//          }
+//      },
+        {
+            url : 'member/TopicList.html',
+            id  : 'TopicList.html',
+            styles : {
+                left   : '200%',
+                top    : '0px',
+                bottom : '48px',
+                width  : "100%"
+            }
+        },
+        {
+            url : 'member/Person.html',
+            id  : 'Person.html',
+            styles : {
+                left   : '300%',
+                top    : '0px',
+                bottom : '48px',
+                width  : "100%"
+            }
+        }
+    ]
+});
+h('#Home').tap(function(){changSub(1);});
+h('#Message').tap(function(){changSub(2);});
+//h('#Shop').tap(function(){changSub(3);});
+h('#Favorite').tap(function(){changSub(3);});
+h('#Person').tap(function(){
+    checkLogin(changSub(4));
+});
+function changSub(index){
+    var sub1 = plus.webview.getWebviewById('Index.html');
+    if(index==1){
+    h("#tabBab").find("li").removeClass("active"); h("#Home").addClass("active");
+    }
+    var sub2 = plus.webview.getWebviewById('Message.html');
+    if(index==2){
+    h("#tabBab").find("li").removeClass("active"); h("#Message").addClass("active");
+    }
+//  var sub3 = plus.webview.getWebviewById('Shop.html');
+//  if(index==3){
+//  h("#tabBab").find("li").removeClass("active"); h("#Shop").addClass("active");
+//  sub3.evalJS("createEmbed();");
+//  }
+    var sub3 = plus.webview.getWebviewById('TopicList.html');
+    if(index==3){
+    h("#tabBab").find("li").removeClass("active"); h("#Favorite").addClass("active");
+    }
+    var sub4 = plus.webview.getWebviewById('Person.html');
+    if(index==4){
+    h("#tabBab").find("li").removeClass("active"); h("#Person").addClass("active");
+    }
+    sub1.setStyle({left: (index - 1) * 100 + "%"});
+    sub2.setStyle({left: (2 - index) * 100 + "%"});
+    sub3.setStyle({left: (3 - index) * 100 + "%"});
+    sub4.setStyle({left: (4 - index) * 100 + "%"});
+//  sub5.setStyle({left: (5 - index) * 100 + "%"});
+}
+
+
+function checkLogin(callback){
+	var objuser=JSON.parse(plus.storage.getItem('user'));
+	if(objuser==undefined || objuser==null || objuser==''){
+		mui.toast('请登陆');
+		var _LoginView=plus.webview.getWebviewById("login.html");
+        if(!_LoginView){
+        	_LoginView=plus.webview.create("login.html","login.html",{},{});
+        }
+        _LoginView.show("slide-in-right",50);
+		return false;
+	}
+	else if(typeof callback === "function"){
+	callback();
+	}
+}
+
+
+
+    var first = null;
+    mui.back = function () {
+        if (!first) {
+            first = new Date().getTime();
+            mui.toast('再按一次退出系统!');
+            setTimeout(function () {
+                first = null;
+            }, 2000);
+        } else {
+            if (new Date().getTime() - first < 2000) {
+                plus.runtime.quit();
+
+            }
+        }
+    };
+</script>
+</body>
+</html>

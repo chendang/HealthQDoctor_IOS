@@ -1,0 +1,852 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0" />
+<meta name="format-detection" content="telephone=no" />
+
+<link type="text/css" href="../css/style.css" rel="stylesheet" />
+<link type="text/css" href="../css/timepicki.css" rel="stylesheet" />
+<style type="text/css">
+
+
+a:link {
+text-decoration: none;
+color: #8295B3;
+}
+a:visited {
+text-decoration: none;
+}
+a:hover {
+text-decoration: none;
+}
+a:active {
+text-decoration: none;
+
+}
+
+</style>
+<title>Q博士</title>
+</head>
+
+<body>
+	
+	<div id="thp_notf_div" class="hpn_top_container" style="display:none;top:0px;">
+	<span class="hpn_top_icon">
+		<img class="rms_img" src="../img/xixi.png">
+	</span>
+	<span class="hpn_top_desc">请按时服用营养素。</span>
+<!--	<a href="javascript:void(0);" class="hpn_top_link" >不再提醒</a>-->
+	<a href="#" class="hpn_top_close">不再提醒</a>
+</div>
+
+<section id="page-wrapper">
+  <!--个人信息页面start-->
+
+  <!--个人信息页面end-->  
+  
+  <!--营养素管理start-->
+  <section id="personal-main">
+    <!--头部start-->
+    <div class="personal-header personal-header-img">
+      <h1>营养素管理</h1>
+      <a href="javascript:CloseCurrentView();" class="p_back"><img src="../img/5-13.png" alt="" /></a>
+    
+    </div>
+    <!--头部end-->
+    <!--编辑个人信息start-->
+    <div class="personal_edit personal_edit-img" onclick="clicked('MedSetList.html','MedSetList.html','slide-in-left')">
+      <ul class="m_cell_hd"><a href="javascript:void(0)"><img src="../img/5-16.jpg" alt="" class="p_click" /></a></ul>
+      <ul class="m_cell_hd m_cell_primary">
+        <h4>营养素设置</h4>
+        <!--<p>健康计划</p>-->
+      </ul>
+    </div>
+    <!--编辑个人信息end-->
+    <!--管理start-->
+    <div class="meal-manage">
+      <ul>
+        <li>
+          <div class="p_info">
+            <div class="p_left">
+              <img src="../img/5-22.png" alt="" />
+            </div>
+            <div class="p_right">
+              <ul class="p_time">
+                <li>
+                  <div class="m_cell_hd m_cell_primary">
+                    <ul class="clearfix">
+                      <h2 class="fl">早</h2>
+                      <i id="estate">已完成</i>
+                    </ul>
+                  </div>
+                  <div class="m_cell_ft" id="earlyChk"><input type="checkbox" class="weui_switch" value="1" id="earlyState"/></div>
+                </li>
+               <li><input type="text" value="Am 7:00-10:00" readonly class="date" /></li>
+              </ul>
+              <ul class="p_list">
+              	<div id="MedGroupEarlyList"></div>
+                <div id="MedEarlyList"></div>
+                
+               
+              </ul>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="p_info">
+            <div class="p_left">
+              <img src="../img/5-22.png" alt="" />
+            </div>
+            <div class="p_right">
+              <ul class="p_time">
+                <li>
+                  <div class="m_cell_hd m_cell_primary">
+                    <ul class="clearfix">
+                      <h2 class="fl">中</h2>
+                      <i id="astate">已完成</i>
+                    </ul>
+                  </div>
+                  <div class="m_cell_ft" id="noonChk"><input type="checkbox" class="weui_switch" value="2" id="noonState"/></div>
+                </li>
+              <li><input type="text" value="pm 11:00-14:00" readonly class="date" /></li>
+              </ul>
+              <ul class="p_list">
+              	<div id="MedGroupNoonList"></div>
+                <div id="MedNoonList"></div>
+
+
+
+              </ul>
+            </div>
+          </div>
+        </li>
+        <li>
+          <div class="p_info">
+            <div class="p_left">
+              <img src="../img/5-22.png" alt="" />
+            </div>
+            <div class="p_right">
+              <ul class="p_time">
+                <li>
+                  <div class="m_cell_hd m_cell_primary">
+                    <ul class="clearfix">
+                      <h2 class="fl">晚</h2>
+                      <i id="nstate">已完成</i>
+                    </ul>
+                  </div>
+                  <div class="m_cell_ft" id="pmChk"><input type="checkbox" class="weui_switch" value="3" id="pmState"/></div>
+                </li>
+                <li><input type="text" value="pm 16:00-21:00" readonly class="date" /></li>
+              </ul>
+              <ul class="p_list">
+                <div id="MedGroupPmList"></div>
+                <div id="MedPmList"></div>
+               
+              </ul>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <!--管理end-->
+  </section>
+  <!--营养素管理end-->
+  
+</section>
+
+
+
+</body>
+<script src="../js/lib/jquery-2.1.3.min.js" type="text/javascript"></script>
+<script src="../js/lib/mui.min.js" type="text/javascript"></script>
+<script src="../js/base.js" type="text/javascript"></script>
+<script src="../js/public.js" type="text/javascript"></script>
+
+<script>
+
+
+var domainUrl = GetMvcApiDomain();
+ 
+var username=null;  
+function plusReady() { 
+	
+var objuser=JSON.parse(plus.storage.getItem('user'));
+username = objuser.UserName;
+
+
+
+getMedTakeList1(username,'1');
+
+getMedTakeList2(username,'2');
+
+getMedTakeList3(username,'3');
+
+var ishave='0';
+ishave=getIsMedTakePierod(username,'1',daycode());
+if(ishave==0){
+document.getElementById('estate').innerHTML = '待完成';
+document.getElementById('earlyState').checked=false;
+getMedTakeSet(username,'1','1');
+}else{
+document.getElementById('estate').innerHTML = '已完成';
+document.getElementById('earlyState').checked=true;
+}
+
+var ishave='0';
+ishave=getIsMedTakePierod(username,'2',daycode());
+if(ishave==0){
+document.getElementById('astate').innerHTML = '待完成';
+document.getElementById('noonState').checked=false;
+}else{
+document.getElementById('astate').innerHTML = '已完成';
+document.getElementById('noonState').checked=true;
+}
+
+var ishave='0';
+ishave=getIsMedTakePierod(username,'3',daycode());
+if(ishave==0){
+document.getElementById('nstate').innerHTML = '待完成';
+document.getElementById('pmState').checked=false;
+}else{
+document.getElementById('nstate').innerHTML = '已完成';
+document.getElementById('pmState').checked=true;
+}
+
+back();
+}
+
+if(window.plus){  
+plusReady();  
+}else{  
+document.addEventListener("plusready",plusReady,false);  
+} 
+
+
+
+
+function ShowMsg1(){
+	
+//localStorage.setItem("view1","");
+if(localStorage.getItem("view1")== undefined || localStorage.getItem("view1")=="" || localStorage.getItem("view1")==null || localStorage.getItem("view1")!=daycode()) {
+	$("#thp_notf_div").slideDown();
+}   
+$(".hpn_top_close").click(function(){
+	localStorage.setItem("view1",daycode());
+	$("#thp_notf_div").slideUp();
+});
+	
+}
+
+function daycode()
+    { 
+        var now = new Date();
+        var year = now.getFullYear();       //年
+        var month = now.getMonth() + 1;     //月
+        var day = now.getDate();            //日
+
+        if(month < 10)
+            month= "0"+month;
+
+        if(day < 10)
+            day= "0"+day;    
+            
+        var code=year.toString()+month.toString()+day.toString()
+        return(code); 
+    } 
+
+
+
+
+function getMedTakeList1(username,taketime) {
+	          $.ajax({
+             	url: domainUrl + "api/med/getMedTakeList",
+                type: 'get',
+                dataType: "json",
+                 async: false,
+                data: {UserName:username,takeTime:taketime},
+                success: function (data) {
+                var inner = '';
+                var istake='0';
+                $.each(data, function (i, j) {
+                inner += '<li class="medxx1" style="padding-top:8px;">';
+                inner += '<em class="on" onclick=javascript:getDelMyBoxMed("'+j.medCode+'");></em>';
+                inner += '<p class="fl">' + j.medName +'('+j.takeNum+j.medUnit+')'+'</p>';
+                istake=getIsTheMedTake(username,daycode(),taketime,j.id);
+                if(istake=='1'){               
+                inner += '<i class="fr"><input type="checkbox" class="weui_switch" value='+ j.id +' id="chkea'+i+'" checked/></i>';
+                }
+                else
+                {
+                 inner += '<i class="fr"><input type="checkbox" class="weui_switch" value='+ j.id +' id="chkea'+i+'" /></i>';	
+                }
+                inner += '</li>';
+
+                });
+
+                $("#MedEarlyList").html(inner); 
+                   
+
+
+               },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })
+ 	
+
+ }
+
+
+function getMedTakeList2(username,taketime) {
+	          $.ajax({
+             	url: domainUrl + "api/med/getMedTakeList",
+                type: 'get',
+                dataType: "json",
+                async:false,
+                data: {UserName:username,takeTime:taketime},
+                success: function (data) {
+                var inner = '';
+                var istake=0;
+                $.each(data, function (i, j) {
+                inner += '<li class="medxx2" style="padding-top:8px;">';
+                inner += '<em class="on" onclick=javascript:getDelMyBoxMed("'+j.medCode+'");></em>';
+                inner += '<p class="fl">' + j.medName +'('+j.takeNum+j.medUnit+')'+'</p>';
+                istake=getIsTheMedTake(username,daycode(),taketime,j.id);
+                if(istake=='1'){               
+                inner += '<i class="fr"><input type="checkbox" class="weui_switch" value='+ j.id +' id="chkna'+i+'" checked/></i>';
+                }
+                else
+                {
+                inner += '<i class="fr"><input type="checkbox" class="weui_switch" value='+ j.id +' id="chkna'+i+'" /></i>';	
+                }
+
+                
+                inner += '</li>';
+                });
+                
+                  $("#MedNoonList").html(inner); 
+                  
+
+               },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })
+ 	
+
+ }
+
+
+function getMedTakeList3(username,taketime) {
+	          $.ajax({
+             	url: domainUrl + "api/med/getMedTakeList",
+                type: 'get',
+                dataType: "json",
+                async:false,
+                data: {UserName:username,takeTime:taketime},
+                success: function (data) {
+                var inner = '';
+                var istake=0;
+                $.each(data, function (i, j) {
+                inner += '<li class="medxx3" style="padding-top:8px;">';
+                inner += '<em class="on" onclick=javascript:getDelMyBoxMed("'+j.medCode+'");></em>';
+                inner += '<p class="fl">' + j.medName +'('+j.takeNum+j.medUnit+')'+'</p>';
+                istake=getIsTheMedTake(username,daycode(),taketime,j.id);
+                if(istake=='1'){               
+                inner += '<i class="fr"><input type="checkbox" class="weui_switch" value='+ j.id +' id="chkpa'+i+'" checked/></i>';
+                }
+                else
+                {
+                inner += '<i class="fr"><input type="checkbox" class="weui_switch" value='+ j.id +' id="chkpa'+i+'" /></i>';	
+                }
+                inner += '</li>';
+                });
+                
+                  $("#MedPmList").html(inner); 
+                
+               },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })
+ 	
+
+ }
+
+
+
+
+function getIsTheMedTake(username,daycode,takeType,medId) {
+	          var res=0;
+	          $.ajax({
+             	url: domainUrl + "api/med/getIsTheMedTake",
+                type: 'get',
+                dataType: "json",
+                async:false,
+                data: {UserName:username,daycode:daycode,takeType:takeType,medId:medId},
+                success: function (data) {
+                	if (data.code=="200"){
+                		if(data.isHave>="1"){
+                			res='1';
+                			//document.getElementById(chkId).checked=true;
+                		}
+                	}
+               },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })
+
+ 	return res;
+
+ }
+
+
+function getIsMedTakePierod(username,takeType,daycode) {
+	          var res=0;
+	          $.ajax({
+             	url: domainUrl + "api/med/getIsHaveTake",
+                type: 'get',
+                dataType: "json",
+                async:false,
+                data: {UserName:username,takeTime:takeType,daycode:daycode},
+                success: function (data) {
+                	if (data.code=="200"){
+                		if(data.isHave>="1"){
+
+                			res='1';
+                		}
+                	}
+               },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })
+
+ 	return res;
+
+ }
+
+
+
+mui('#earlyChk').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+
+if (ischeck=="true"){
+TakeMedBatch(username,'1');
+//getMedGroupTakeList1(username,'1');
+getMedTakeList1(username,'1');
+}
+if (ischeck=="false"){
+	
+TakeMedBatchDel(username,daycode(),'1');
+//getMedGroupTakeList1(username,'1');
+getMedTakeList1(username,'1');
+}
+
+});
+
+
+
+mui('#noonChk').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+
+if (ischeck=="true"){
+TakeMedBatch(username,'2');
+//getMedGroupTakeList2(username,'2');
+getMedTakeList2(username,'2');
+}
+if (ischeck=="false"){
+	
+TakeMedBatchDel(username,daycode(),'2');
+//getMedGroupTakeList2(username,'2');
+getMedTakeList2(username,'2');
+}
+
+}); 
+
+
+mui('#pmChk').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+
+if (ischeck=="true"){
+TakeMedBatch(username,'3');
+//getMedGroupTakeList3(username,'3');
+getMedTakeList3(username,'3');
+}
+if (ischeck=="false"){
+	
+TakeMedBatchDel(username,daycode(),'3');
+//getMedGroupTakeList3(username,'3');
+getMedTakeList3(username,'3');
+}
+
+}); 
+
+
+
+mui('#MedGroupEarlyList').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+if (ischeck=="true"){
+TakeMedSave(username,chkval,'1','1')
+}
+
+if (ischeck=="false"){
+TakeMedDel(username,daycode(),chkval,'1');
+
+}
+
+}); 
+
+mui('#MedEarlyList').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+if (ischeck=="true"){
+TakeMedSave(username,chkval,'1','1')
+}
+if (ischeck=="false"){
+TakeMedDel(username,daycode(),chkval,'1');
+}
+
+}); 
+
+
+mui('#MedGroupNoonList').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+if (ischeck=="true"){
+TakeMedSave(username,chkval,'2','1')
+}
+
+if (ischeck=="false"){
+TakeMedDel(username,daycode(),chkval,'2');
+}
+
+});
+
+
+mui('#MedNoonList').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+if (ischeck=="true"){
+TakeMedSave(username,chkval,'2','1')
+}
+
+if (ischeck=="false"){
+TakeMedDel(username,daycode(),chkval,'2');
+}
+
+}); 
+
+
+mui('#MedGroupPmList').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+
+if (ischeck=="true"){
+TakeMedSave(username,chkval,'3','1')
+}
+
+if (ischeck=="false"){
+TakeMedDel(username,daycode(),chkval,'3');
+}
+
+});
+
+
+
+mui('#MedPmList').on('change', 'input', function() {  
+var ischeck = this.checked?"true":"false";  
+var chkval=this.value;
+if (ischeck=="true"){
+TakeMedSave(username,chkval,'3','1')
+}
+
+if (ischeck=="false"){
+TakeMedDel(username,daycode(),chkval,'3');
+}
+
+}); 
+
+
+function TakeMedSave(username,medId,takePeriod,takeState){
+	
+	var jsonData = {
+            "UserName":username,
+            "medId":medId,
+            "takePeriod":takePeriod,
+            "takeState":takeState
+           }
+            
+
+             $.ajax({
+             	url: domainUrl + "api/Med/MDaysMedAdd",
+                type: 'post',
+                dataType: "json",
+                data:jsonData,
+                success: function (data) {
+                        if(data.code=="200"){
+                        	
+                        	plus.nativeUI.toast("操作成功");
+                        		
+
+                        }else{
+                        	plus.nativeUI.toast("数据提交发生错误，请稍后再试");
+                        }
+
+
+                  },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+
+                 }
+            })
+	
+	
+	
+	
+}
+
+
+
+function TakeMedBatch(username,takePeriod){
+            var res=0;
+
+             $.ajax({
+             	url: domainUrl + "api/Med/GetMDaysMedAddBatch",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,TakePeriod:takePeriod},
+                success: function (data) {
+                	if(data.code=="200"){
+                       if(data.res>="1"){
+                			plus.nativeUI.toast("操作成功");
+                		}
+                		else{
+                			plus.nativeUI.toast("操作失败");
+                		}
+                	}else{
+                			plus.nativeUI.toast("数据处理错误");
+                	  }
+
+
+
+                  },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+
+                 }
+            })
+	
+	
+	
+	
+}
+
+
+
+
+
+
+function TakeMedDel(username,daycode,medId,takePeriod){
+            var res=0;
+
+             $.ajax({
+             	url: domainUrl + "api/Med/GetMDaysMedDel",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,daycode:daycode,MedId:medId,TakePeriod:takePeriod},
+                success: function (data) {
+                	if(data.code=="200"){
+                       if(data.res>="1"){
+                       	plus.nativeUI.toast("取消操作成功");
+                		}
+                		else{
+                			plus.nativeUI.toast("取消操作失败");
+                		}
+                	 }else{
+                	 	plus.nativeUI.toast("数据处理错误");
+                	  }
+
+
+                  },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+
+                 }
+            })
+	
+	
+	
+	
+}
+
+
+
+function TakeMedBatchDel(username,daycode,takePeriod){
+            var res=0;
+
+             $.ajax({
+             	url: domainUrl + "api/Med/GetMDaysMedBatchDel",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,daycode:daycode,TakePeriod:takePeriod},
+                success: function (data) {
+                	if(data.code=="200"){
+                       if(data.res>="1"){
+                			plus.nativeUI.toast("操作成功");
+                		}
+                		else{
+                			plus.nativeUI.toast("操作失败");
+                		}
+                	}else{
+                			plus.nativeUI.toast("数据处理错误");
+                	  }
+
+
+                  },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+
+                 }
+            })
+	
+	
+	
+	
+}
+
+
+
+
+ function getDelMyBoxMed(medcode) {
+	          var res=0;
+	          $.ajax({
+             	url: domainUrl + "api/Med/getMyBoxMedDel",
+                type: 'get',
+                dataType: "json",
+                async:false,
+                data: {UserName:username,MedCode:medcode},
+                success: function (data) {
+                	if (data.code=="200"){
+                		if(data.res>="1"){
+                			plus.nativeUI.toast("取消营养素成功");
+                			getMedTakeList1(username,'1');
+                			getMedTakeList2(username,'2');
+                			getMedTakeList3(username,'3');
+                		}
+                		else{
+                			plus.nativeUI.toast("数据提交错误，请稍后再试");
+                		}
+                	}
+               },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })
+
+ 	return res;
+
+ }
+ 
+ 
+ 
+ function getMedTakeSet(username,setType,timeType) {
+	          $.ajax({
+             	url: domainUrl + "api/CallSet/getCallSet",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,SetType:setType,TimeType:timeType},
+                success: function (data) {
+                	if (data.code=="200"){
+                		if (data.OnOff=='1' && data.SetTime.length!=0){
+                		var settime=getsettime(data.SetTime).replace(/-/g,"/");
+                		var curtime=daytime().replace(/-/g,"/");
+                		if (curtime>settime){
+                			ShowMsg1();
+                		}
+                		}
+                	
+                	}
+               },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })
+
+
+ }
+   
+   
+function daytime()
+{ 
+var now = new Date();
+var year = now.getFullYear();    //年
+var month = now.getMonth() + 1;   //月
+var day = now.getDate();      //日
+var hh = now.getHours();      //时
+var mm = now.getMinutes();     //分
+var clock = year + "-";
+if (month < 10)
+clock += "0";
+clock += month + "-";
+if (day < 10)
+clock += "0";
+clock += day + " ";
+if (hh < 10)
+clock += "0";
+clock += hh + ":";
+if (mm < 10) clock += '0';
+clock += mm;
+
+return(clock); 
+}
+
+
+function getsettime(timeval)
+{ 
+var now = new Date();
+var year = now.getFullYear();    //年
+var month = now.getMonth() + 1;   //月
+var day = now.getDate();      //日
+
+var clock = year + "-";
+if (month < 10)
+clock += "0";
+clock += month + "-";
+if (day < 10)
+clock += "0";
+clock += day + " ";
+
+clock += timeval;
+
+return(clock); 
+}
+
+
+   
+ 
+function takeMessage(){
+	
+var btnArray = ['再说', '好的，不再提醒'];
+mui.confirm('您到了服用时间，服用吗？', '温馨提示哦', btnArray, function(e) {
+if (e.index == 1) {
+	
+} else {
+	
+	}
+})
+	
+}
+ 
+ 
+ 
+
+</script>
+
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>监测计划</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="../css/sm.min.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/Monitor.css">
+    <link rel="stylesheet" href="../css/calendar.css">
+
+</head>
+<body>
+<div class="page-group">
+    <div class="page page-current">
+        <header class="bar bar-nav">
+            <a class="left bar-nav-mt1 back" href="javascript:CloseCurrentView();">
+                <img src="../img/5-13.png" alt="">
+            </a>
+            <h2 class="title color-white">监测计划</h2>
+        </header>
+
+        <div class="content">
+            <div class="databg">
+                <div class="databg-showall">
+                    <div class="databg-showdata">
+                        21
+                    </div>
+                    <div class="databg-showinfo">
+                        <p class="databg-showinfo-week">星期六</p>
+                        <p class="databg-showinfo-yearmonth">2016年12月</p>
+                        <span class="databg-showinfo-text">
+                            没有监测计划
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-block my-content-block-data">
+
+
+                <div class="list-block">
+                    <div data-toggle="date" id='calendar-inline'></div>
+                    <input type="text" name="click-dateDay" id="clickDateDay">
+                </div>
+
+                <div class="list-block textarea-list-block">
+                    <div class="item-inner">
+                        <div class="item-input">
+                            <textarea class="textarea" placeholder="" id="setContent"></textarea>
+                        </div>
+                    </div>
+                    <a href="" class="sub-succ" id="sendsave">
+                        <img src="../img/ok.png" alt="">
+                    </a>
+                </div>
+
+
+                    <div class="row bottom-btn-row">
+                        <div class="col-50">
+                            <p><a href="#" class="button button-fill sport-monitor-btn">绑定监测设备</a></p>
+                        </div>
+                        <div class="col-50">
+                            <a href="" class="right sport-monitor-text">
+                                购买监测设备
+                            </a>
+                        </div>
+                    </div>
+
+               </div>
+               
+               
+            </div>
+            
+        </div>
+        
+        
+
+        
+    </div>
+</div>
+<script src="../js/base.js"></script>
+<script src="../js/lib/mui.min.js"></script>
+<script src="../js/zepto.min.js"></script>
+<script src="../js/my-sm.js"></script>
+<script src="../js/public.js" type="text/javascript"></script>
+
+
+
+<script>
+
+
+var domainUrl = GetMvcApiDomain();
+
+var username=null;  
+function plusReady() { 	
+var objuser=JSON.parse(plus.storage.getItem('user'));
+username = objuser.UserName;
+
+
+back();
+}
+
+if(window.plus){  
+plusReady();  
+}else{  
+document.addEventListener("plusready",plusReady,false);  
+} 
+
+$.init();
+    
+
+
+
+var today = new Array('星期日','星期一','星期二','星期三','星期四','星期五','星期六');
+    
+    
+var dayshowText = {};
+
+
+    //getMonitorSetList(username);
+
+
+    var dataDay='';
+    var mydate = new Date();
+    var year = mydate.getFullYear();
+    var month = parseInt(mydate.getMonth())+1;
+    var date = mydate.getDate();
+    var week = today[mydate.getDay()];
+     dataDay=date;
+    if(parseInt(date) < 10){
+        dataDay = "0"+date;
+    }
+    $(".databg-showdata").text(date);
+    var yearMonth = year+"年"+month+"月";
+    $(".databg-showinfo-yearmonth").text(yearMonth);
+    $(".databg-showinfo-week").text(week);
+    var theday=year.toString()+month.toString()+dataDay.toString();
+
+
+getDayMonitorSet(username,theday)
+
+document.getElementById("sendsave").addEventListener('tap',function(){	
+var theDay=$(".databg-showdata").html();
+var theYearMonth=$(".databg-showinfo-yearmonth").html().replace('年', '').replace('月', '');
+var theDate=theYearMonth.toString()+theDay.toString();
+
+var setcontent = document.getElementById("setContent").value;
+if (setcontent.length==0 || setcontent==null){
+mui.alert('请输入监测计划内容');
+return false;
+}
+else{
+getSetSave(username,theDate,setcontent);
+}
+}); 
+
+
+
+    
+
+
+
+function getDayMonitorSet(username,theday) {
+               var dayshowText="没有设置监测计划";
+	          $.ajax({
+             	url: domainUrl + "api/MonitorSet/getMonitorDaySet",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,TheDay:theday},
+                success: function (data) {
+               
+                var jsonx = JSON.parse(data.Data);
+                if (jsonx.setContent.length>0){
+                dayshowText=jsonx.setContent;
+                }else{
+                dayshowText="没有设置监测计划";	
+                }
+                 $(".databg-showinfo-text").text(dayshowText);
+                 if (dayshowText=="没有设置监测计划"){
+                 $(".textarea").val("");
+                 }else{
+                 $(".textarea").val(dayshowText);	
+                 }
+                
+                
+              
+            },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })	
+	
+	
+}
+
+
+function getMonitorSetList(username) {
+
+	          $.ajax({
+             	url: domainUrl + "api/MonitorSet/getMonitorSetList",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username},
+                success: function (data) {
+               
+                var jsonx = eval(data.Data);
+                var dayshowText=jsonx[0].lists;
+                //mui.alert(dayshowText);
+                
+                
+              
+            },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })	
+	
+	
+}
+
+
+
+function getSetSave(username,thedate,setcontent) {
+               	$.ajax({
+             	url: domainUrl + "api/MonitorSet/getMonitorSetSave",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,TheDate:thedate,setContent:setcontent},
+                success: function (data) {
+                var jsonx = JSON.parse(data.Data);
+                if (jsonx.code=='200'){
+                	plus.nativeUI.toast("计划保存成功！");
+                }
+                else{
+                	plus.nativeUI.toast("数据提交失败！");
+                }
+
+
+              
+            },
+                error: function () {
+                plus.nativeUI.toast("网络错误，请稍后再试");
+                 }
+            })
+
+	
+}
+
+
+
+function getSetSaveMUI(username,thedate,setcontent) {
+                var urls = domainUrl + "api/MonitorSet/getMonitorSetSave?UserName="+username+"&TheDate="+thedate+"&setContent="+setcontent;
+                
+                var jsondata = {
+						UserName: username,
+						TheDate: thedate,
+						setContent: setcontent
+					};
+                params = JSON.stringify(jsondata);
+                
+                mui.ajax(urls, {  
+                    //data: params, 
+                    //data: {UserName:username,TheDate:thedate,setContent:setcontent},
+                    type: 'get',  
+                    timeout: 10000, 
+                    dataType:'json',
+                    success: function(data) {  
+                     
+                        var obj = JSON.parse(data);  
+                        rescode = obj.code;  
+                       
+                        if (rescode == 200) {  
+                           plus.nativeUI.toast('数据成功保持'); 
+                           
+       
+                           
+                        } else {  
+                           plus.nativeUI.toast('数据提交错误'); 
+                        }  
+                    },  
+                    error: function(code, type, msg) {  
+                        alert("error:" + code + "\ntype = " + type + "\nmsg:" + msg);  
+                    }  
+                });  
+
+
+	
+}
+
+
+
+    
+    
+</script>
+</body>
+</html>

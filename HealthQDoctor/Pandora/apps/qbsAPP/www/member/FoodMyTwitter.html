@@ -1,0 +1,295 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0" />
+<meta name="format-detection" content="telephone=no" />
+
+<link type="text/css" href="../css/style.css" rel="stylesheet" />
+
+<title>Q博士</title>
+</head>
+
+<body>
+<!--头部start-->
+<div class="personal-header">
+  <h1>膳食日志记录</h1>
+  <a href="javascript:CloseCurrentView();" class="p_back"><img src="../img/5-13.png" alt="" /></a>
+
+</div>
+<script>
+
+
+</script>
+<!--头部end-->
+
+<!--膳食计划start-->
+<div class="meal_plan">
+  <ul>
+    <p>您膳食计划<i id="thedays"></i></p>
+  </ul>
+</div>
+<!--膳食计划end-->
+
+<!--日志、资讯start-->
+<div class="meal_management">
+  <ul class="tab">
+    <a href="javascript:void(0)" class="on">膳食日志</a>
+    <a href="javascript:void(0)">最新资讯</a>
+  </ul>
+  <ul class="meal_reviews">
+    <!--日志start-->
+    <div class="log_list">
+      <ul class="clearfix">
+        <a class="fr add" id="FoodTwitterAdd">添加新日志</a>
+      </ul>
+      <ul class="p_list">
+      	
+        <!--<li>
+          <p class="add_time"><b>12</b>12月</p>
+          <p class="add_question">评论<em>5</em></p>
+          <p class="add_edit"><a href="##" title="">编辑日志</a></p>
+          <div>
+            <h4>早餐很丰盛</h4>
+            <p>生活中，有些食物的搭配组合已经是由来已久，其美妙的口味也被人们所接受，习惯上也觉得这些种搭配是顺理成章的了。</p>
+            <ul class="clearfix p_info01">
+              <img src="../img/7.jpg" class="fl" />
+              <img src="../img/7.jpg" class="fl" />
+              <img src="../img/7.jpg" class="fl" />
+            </ul>
+            <p>健康师点评：很好，在搭配点西红柿更棒，多补充点水分！</p>
+            <p>隔壁王哥：恩~多吃点青菜，身体越来越牛！</p>
+          </div>
+        </li>-->
+        
+       <div id="myTwitterList"></div>
+      </ul>
+    </div>
+    <!--日志end-->
+    <!--最新资讯start-->
+    <div class="p_plan mt10 disable">
+      <!--<ul class="p_news_list">
+        <div id="newsTopList"></div>
+      </ul>
+      <ul class="p_more">
+        <a href="##" title="">查看更多</a>
+      </ul>-->
+      <ul class="p_news_list">
+
+       <div id="newsRecommendList"></div>
+      </ul>
+      <ul class="p_more" id="newsmore">
+        <a href="##" title="">查看更多</a>
+      </ul>
+    </div>
+    <!--最新资讯end-->
+  </ul>
+</div>
+
+
+<!--底部end-->   
+
+</body>
+
+<script src="../js/lib/jquery-2.1.3.min.js" type="text/javascript"></script>
+<script src="../js/lib/mui.min.js" type="text/javascript"></script>
+<script src="../js/base.js" type="text/javascript"></script>
+<script src="../js/public.js" type="text/javascript"></script>
+<script>
+
+$('.meal_management .tab a').click(function(){
+  $(this).addClass("on").siblings().removeClass();
+  $(".meal_reviews > div").eq($(".meal_management .tab a").index(this)).show().siblings().hide();
+});
+
+			
+			
+var domainUrl = GetMvcApiDomain();
+ 
+var username=null;  
+function plusReady() { 
+	
+var objuser=JSON.parse(plus.storage.getItem('user'));
+username = objuser.UserName;
+
+ getTheDays('1');
+ getTwitterList('1','50','3','4');
+getFoodNewsTopList('17','2');
+getFoodNewsRecommendList('17','3');
+
+
+back();
+}
+
+if(window.plus){  
+plusReady();  
+}else{  
+document.addEventListener("plusready",plusReady,false);  
+} 
+ 
+
+ 
+
+ 
+ 
+ function getTwitterList(tClass,topcount1,topcount2,topcount3) {
+	
+	          $.ajax({
+             	url: domainUrl + "api/food/getMyTwitterAndPhoto",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,tClass:tClass,topcount1:topcount1,topcount2:topcount2,topcount3:topcount3},
+                success: function (data) {
+                var inner = '';
+                var posttime="";
+                var photolist="";
+                var jsonx = eval(data.Data);
+                $.each(jsonx, function (i, j) {  
+                	
+                 photolist=jsonx[i].photolist;
+                 commentlist=jsonx[i].commentList;
+                 posttime=new Date(jsonx[i].postTime);
+                 inner += '<li>';
+                 inner += '<p class="add_time"><b>'+posttime.getDate()+'</b>'+(posttime.getMonth()+1)+'月</p>';
+                 inner += '<p class="add_question">评论<em>'+jsonx[i].commentn+'</em></p>';
+                 inner += '<p class="add_edit"><a href="##" title="">编辑日志</a></p>';
+                 inner += '<div>';
+                 inner += '<p>' + jsonx[i].content + '</p>';
+                 inner += '<ul class="clearfix p_info01">'; 
+                 $.each(photolist, function (m, n) { 
+                 inner += '<img src="' +domainUrl+'api/upload/'+ n.FileName + '" class="fl" width=112 height=85>'; 
+                  }); 
+                 inner += '</ul>';
+                 $.each(commentlist, function (p, q) { 
+                 inner += '<p>'+q.NickName+'：'+q.content+'</p>';
+                 }); 
+                 inner += '</div>';
+                 inner += '</li>';
+                 inner += '<hr style="height:1px;border:none;border-top:1px dashed #000000; margin-top:25px;padding-bottom:12px" />';
+                 
+
+                 
+
+                 
+             });  
+             $("#myTwitterList").html(inner);   
+              
+            },
+                error: function () {
+                mui.toast("网络错误，请稍后再试");
+                 }
+            })
+
+ }
+ 
+
+ 
+ function getTheDays(tClass) {
+	
+	          $.ajax({
+             	url: domainUrl + "api/food/getFoodTwitterDays",
+                type: 'get',
+                dataType: "json",
+                data: {UserName:username,tclass:tClass},
+                success: function (data) {
+                var jsonx = JSON.parse(data.Data);
+               document.getElementById("thedays").innerHTML="第"+jsonx.theDays+"天";   
+
+              
+            },
+                error: function () {
+                mui.toast("网络错误，请稍后再试");
+                 }
+            })
+
+ }
+
+
+function getFoodNewsTopList(newsClass,topcount) {
+	
+	          $.ajax({
+             	url: domainUrl + "api/News/getNewsTopList",
+                type: 'get',
+                dataType: "json",
+                data: {newsClass:newsClass,topcount:topcount},
+                success: function (data) {
+                var inner = '';
+                $.each(data, function (i, j) {
+                inner += '<li>';
+                inner += '<a href="javascript:showNewsContent(' + j.Id + ');" title="">';
+                inner += '<div class="m_cell_hd"><img src="' + j.img_src + '">';
+                inner += '</div>';
+                inner += '<div class="m_cell_ft m_cell_primary">';
+                inner += '<h4>' + j.title + '</h4>';
+                inner += '<p>' + j.content + '</p>';
+                inner += '</div>';
+                inner += '</a>';
+                inner += '</li>';
+                });
+                $("#newsTopList").html(inner);    
+               },
+                error: function () {
+                mui.toast("网络错误，请稍后再试");
+                 }
+            })
+
+ }
+
+
+function getFoodNewsRecommendList(newsClass,topcount) {
+	
+	          $.ajax({
+             	url: domainUrl + "api/News/getNewsRecommendList",
+                type: 'get',
+                dataType: "json",
+                data: {newsClass:newsClass,topcount:topcount},
+                success: function (data) {
+                var inner = '';
+                $.each(data, function (i, j) {
+                inner += '<li>';
+                inner += '<a href="javascript:showNewsContent(' + j.Id + ');" title="">';
+                inner += '<div class="m_cell_hd"><img src="' + j.img_src + '" width=65px>';
+                inner += '</div>';
+                inner += '<div class="m_cell_ft m_cell_primary">';
+                inner += '<h4>' + j.title + '</h4>';
+                inner += '<p>' + j.content + '</p>';
+                inner += '</div>';
+                inner += '</a>';
+                inner += '</li>';
+                });
+                $("#newsRecommendList").html(inner);    
+               },
+                error: function () {
+                mui.toast("网络错误，请稍后再试");
+                 }
+            })
+
+ }
+ 
+ function showNewsContent(id){
+
+GoNewsContent('NewsContent.html','NewsContent.html','zoom-fade-out',id) 
+}; 
+ 
+ 
+ document.getElementById("FoodTwitterAdd").addEventListener('tap',function(){
+ 	clicked('FoodTwitterAdd.html','FoodTwitterAdd.html','zoom-fade-out');
+ });
+ 
+ 
+  document.getElementById("newsmore").addEventListener('tap',function(){
+
+ var cid=17
+ GoNewsMore('NewsMore.html','NewsMore.html','slide-in-left',cid)
+ 
+ });
+ 
+ 
+
+ 
+ 
+
+ 
+ 
+ </script>
+</html>
