@@ -62,49 +62,8 @@ UITableViewDelegate, UITableViewDataSource // 表视图代理协议和数据源�
     //PNLineChart * lineChart = [[PNLineChart alloc] initWithFrame:CGRectMake(0, 135.0, SCREEN_WIDTH, 200.0)];
     //[lineChart setXLabels:@[@"SEP 1",@"SEP 2",@"SEP 3",@"SEP 4",@"SEP 5"]];
     
-    //初始化
-    _lineChart = [[PNLineChart alloc] initWithFrame:CGRectMake(0, 135.0, SCREEN_WIDTH, 250.0)];
-    //设置背景颜色
-    _lineChart.backgroundColor = [UIColor clearColor];
-    //设置坐标轴是否可见
-    _lineChart.showCoordinateAxis = YES;
-    //设置是否显示网格线
-    _lineChart.showYGridLines = YES;
-    //设置网格线颜色
-    _lineChart.yGridLinesColor = [UIColor grayColor];
-    
-    
-    
-    //曲线数据
-    PNLineChartData *data = [PNLineChartData new];
-    //数据点颜色
-    data.color = PNGreen;
-    //数据点格式
-    data.inflexionPointStyle = PNLineChartPointStyleCircle;
-    
-    //设置数据标注名称
-    data.dataTitle = @"周收入";
-    
-    //设置X轴标签
-    NSArray *xLabels = @[@"07-04",@"07-05",@"07-06",@"07-07",@"07-08",@"07-09",@"07-10"];
-    [self.lineChart setXLabels:xLabels];
-    
-    //设置Y轴数据
-    NSArray *dataArray = @[@4,@8,@7,@4,@9,@6,@5];
-    data.itemCount = dataArray.count;
-    data.getData = ^(NSUInteger index){
-        CGFloat yValue = [dataArray[index] floatValue];
-        return [ PNLineChartDataItem dataItemWithY:yValue];
-    };
-    
-    
-    
-    
-    
-    
-    _lineChart.chartData = @[data];
-    [_lineChart strokeChart];
-    
+   
+    _lineChart = [self initLineChartViewWithData];
     [self.view addSubview:_lineChart];
 //    [self.view addSubview:_gView];
 //    _perArr = [NSMutableArray array];
@@ -117,19 +76,6 @@ UITableViewDelegate, UITableViewDataSource // 表视图代理协议和数据源�
     [self initSubviews];
     _cMgr = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 
-    //post 数据到服务端
-    NSDictionary *params = @{
-                             @"username" : @"520it",
-                             @"pwd" : @"520it"
-                             };
-    NSString *url= @"https://www.hkbchina.com/pcweb";
-    [[PCNetworkManager defaultManager] sendRequestMethod:(HTTPMethodPOST) serverUrl:url apiPath:@"login.do?BankId=9999&LoginType=R" parameters:params progress:nil success:^(BOOL isSuccess, id  _Nullable responseObject) {
-        NSLog(@"post success:%@",responseObject);
-        NSLog(@"response code:%@",[responseObject objectForKey:@"ReturnCode"]);
-        NSLog(@"response msg2:%@",[[responseObject objectForKey:@"ReturnMessage"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]);
-    } failure:^(NSString * _Nullable errorMessage) {
-         NSLog(@"post failure:%@",errorMessage);
-    }];
     
 
 }
@@ -259,6 +205,62 @@ UITableViewDelegate, UITableViewDataSource // 表视图代理协议和数据源�
     view.yArray = @[@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9"];
     view.xArray = @[@"0",@"1",@"2",@"3",@"4",@"5",@"6",@"7",@"8",@"9"];
     return view;
+}
+
+- (PNLineChart *)initLineChartViewWithData{
+    //初始化
+    _lineChart = [[PNLineChart alloc] initWithFrame:CGRectMake(0, 135.0, SCREEN_WIDTH, 250.0)];
+    //设置背景颜色
+    _lineChart.backgroundColor = [UIColor clearColor];
+    //设置坐标轴是否可见
+    _lineChart.showCoordinateAxis = YES;
+    //设置是否显示网格线
+    _lineChart.showYGridLines = YES;
+    //设置网格线颜色
+    _lineChart.yGridLinesColor = [UIColor grayColor];
+    
+    
+    
+    //曲线数据
+    PNLineChartData *data = [PNLineChartData new];
+    //数据点颜色
+    data.color = PNGreen;
+    //数据点格式
+    data.inflexionPointStyle = PNLineChartPointStyleCircle;
+    
+    //设置数据标注名称
+    data.dataTitle = @"周收入";
+    
+    //设置X轴标签
+    NSArray *xLabels = @[@"07-04",@"07-05",@"07-06",@"07-07",@"07-08",@"07-09",@"07-10"];
+    [self.lineChart setXLabels:xLabels];
+    
+    //设置Y轴数据
+    NSArray *dataArray = @[@4,@8,@7,@4,@9,@6,@5];
+    data.itemCount = dataArray.count;
+    data.getData = ^(NSUInteger index){
+        CGFloat yValue = [dataArray[index] floatValue];
+        return [ PNLineChartDataItem dataItemWithY:yValue];
+    };
+    _lineChart.chartData = @[data];
+    [_lineChart strokeChart];
+    
+    
+    //post 数据到服务端
+    NSDictionary *params = @{
+                             @"username" : @"520it",
+                             @"pwd" : @"520it"
+                             };
+    NSString *url= @"https://www.hkbchina.com/pcweb";
+    [[PCNetworkManager defaultManager] sendRequestMethod:(HTTPMethodPOST) serverUrl:url apiPath:@"login.do?BankId=9999&LoginType=R" parameters:params progress:nil success:^(BOOL isSuccess, id  _Nullable responseObject) {
+        NSLog(@"post success:%@",responseObject);
+        NSLog(@"response code:%@",[responseObject objectForKey:@"ReturnCode"]);
+        NSLog(@"response msg2:%@",[[responseObject objectForKey:@"ReturnMessage"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]);
+    } failure:^(NSString * _Nullable errorMessage) {
+        NSLog(@"post failure:%@",errorMessage);
+    }];
+    
+    return _lineChart;
 }
 
 - (void)buttonAction:(UIButton *)button
